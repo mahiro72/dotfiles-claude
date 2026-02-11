@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostCompact": [
+      {
+        "type": "command",
+        "command": "~/.claude/hooks/save-history.sh PostCompact"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "~/.claude/hooks/save-history.sh Stop"
+      }
+    ]
+  }
+}
