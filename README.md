@@ -11,7 +11,6 @@ dotfiles-ai/
 ├── claude/
 │   ├── CLAUDE.md     # グローバルプロンプト
 │   ├── settings.json # ツール許可設定
-│   ├── hooks.json    # hooks設定
 │   └── skills/
 │       ├── init-knowledge/  # /init-knowledge
 │       └── review/          # /review

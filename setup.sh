@@ -43,7 +43,6 @@ echo ""
 echo "Linking claude config files..."
 link_file "${SCRIPT_DIR}/claude/CLAUDE.md" "${CLAUDE_HOME}/CLAUDE.md"
 link_file "${SCRIPT_DIR}/claude/settings.json" "${CLAUDE_HOME}/settings.json"
-link_file "${SCRIPT_DIR}/claude/hooks.json" "${CLAUDE_HOME}/hooks.json"
 
 echo ""
 echo "Linking hooks..."

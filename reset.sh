@@ -35,7 +35,6 @@ echo ""
 echo "Removing symlinks..."
 unlink_file "${CLAUDE_HOME}/CLAUDE.md"
 unlink_file "${CLAUDE_HOME}/settings.json"
-unlink_file "${CLAUDE_HOME}/hooks.json"
 unlink_file "${CLAUDE_HOME}/hooks/save-history.sh"
 
 echo ""
