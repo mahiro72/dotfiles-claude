@@ -74,10 +74,14 @@ fi
 TEMP_FILE=$(mktemp)
 trap "rm -f '${TEMP_FILE}'" EXIT
 
-# transcript内容を一時ファイルに書き込む
+# transcript内容を一時ファイルに書き込む（必要な情報のみ抽出）
 if [ -n "${TRANSCRIPT_PATH}" ] && [ -f "${TRANSCRIPT_PATH}" ]; then
-  # JSONL形式を配列に変換
-  jq -s '.' "${TRANSCRIPT_PATH}" > "${TEMP_FILE}" 2>/dev/null || echo "[]" > "${TEMP_FILE}"
+  # JSONL形式を配列に変換し、user/assistantのみ抽出して軽量化
+  jq -s '[.[] | select(.type == "user" or .type == "assistant") | {
+    type,
+    timestamp,
+    content: .message.content
+  }]' "${TRANSCRIPT_PATH}" > "${TEMP_FILE}" 2>/dev/null || echo "[]" > "${TEMP_FILE}"
 else
   echo "[]" > "${TEMP_FILE}"
 fi
