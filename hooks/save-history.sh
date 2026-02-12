@@ -2,12 +2,12 @@
 #
 # Claude Code セッション履歴保存スクリプト
 #
-# PostCompact / Stop hook から呼び出され、セッションデータを
-# 各プロジェクトの .claude/logs/{session_id}_{date}.json に保存します
-# 同一セッションの場合は追記（上書き）
+# PreCompact から呼び出され、セッションデータを
+# 各プロジェクトの .claude/logs/{date}_{session_id}.json に保存します
+# 会話履歴（transcript）も含め、重複保存はスキップ
 #
 # 使用方法: save-history.sh <event>
-#   event: PostCompact | Stop
+#   event: PreCompact
 #
 
 set -euo pipefail
@@ -20,7 +20,8 @@ if ! command -v jq &> /dev/null; then
 fi
 
 HOOK_EVENT="${1:-unknown}"
-DATE=$(date +"%y%m%d")
+DATE=$(date +"%Y%m%d")
+TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S")
 PROJECT_ROOT=$(pwd)
 LOGS_DIR="${PROJECT_ROOT}/.claude/logs"
 
@@ -44,18 +45,61 @@ if [ -z "${SESSION_ID}" ]; then
   exit 1
 fi
 
-# 履歴ファイルのパス（セッションID + 日付）
-HISTORY_FILE="${LOGS_DIR}/${SESSION_ID}_${DATE}.json"
+# transcript_pathを取得
+TRANSCRIPT_PATH=$(echo "${SESSION_DATA}" | jq -r '.transcript_path // empty' 2>/dev/null || true)
 
-# jqで整形して保存
-echo "${SESSION_DATA}" | jq --arg event "${HOOK_EVENT}" --arg date "${DATE}" '{
+# 履歴ファイルのパス（日付 + セッションID）
+HISTORY_FILE="${LOGS_DIR}/${DATE}_${SESSION_ID}.json"
+
+# 重複チェック用: transcript の行数を取得
+CURRENT_TRANSCRIPT_LINES=0
+if [ -n "${TRANSCRIPT_PATH}" ] && [ -f "${TRANSCRIPT_PATH}" ]; then
+  CURRENT_TRANSCRIPT_LINES=$(wc -l < "${TRANSCRIPT_PATH}" | tr -d ' ')
+fi
+
+# 既存ファイルがある場合、前回の行数と比較して重複をスキップ
+if [ -f "${HISTORY_FILE}" ]; then
+  LAST_TRANSCRIPT_LINES=$(jq -r '.metadata.transcript_lines // 0' "${HISTORY_FILE}" 2>/dev/null || echo "0")
+  # 空文字列や非数値の場合は0として扱う
+  if ! [[ "${LAST_TRANSCRIPT_LINES}" =~ ^[0-9]+$ ]]; then
+    LAST_TRANSCRIPT_LINES=0
+  fi
+  if [ "${CURRENT_TRANSCRIPT_LINES}" -eq "${LAST_TRANSCRIPT_LINES}" ]; then
+    echo "Skipped: No new transcript content (lines: ${CURRENT_TRANSCRIPT_LINES})" >&2
+    exit 0
+  fi
+fi
+
+# 一時ファイルを使用してtranscriptを処理（引数長制限を回避）
+TEMP_FILE=$(mktemp)
+trap "rm -f '${TEMP_FILE}'" EXIT
+
+# transcript内容を一時ファイルに書き込む
+if [ -n "${TRANSCRIPT_PATH}" ] && [ -f "${TRANSCRIPT_PATH}" ]; then
+  # JSONL形式を配列に変換
+  jq -s '.' "${TRANSCRIPT_PATH}" > "${TEMP_FILE}" 2>/dev/null || echo "[]" > "${TEMP_FILE}"
+else
+  echo "[]" > "${TEMP_FILE}"
+fi
+
+# jqで整形して保存（transcriptはslurpfileで読み込み）
+echo "${SESSION_DATA}" | jq \
+  --arg event "${HOOK_EVENT}" \
+  --arg date "${DATE}" \
+  --arg timestamp "${TIMESTAMP}" \
+  --argjson transcript_lines "${CURRENT_TRANSCRIPT_LINES}" \
+  --slurpfile transcript "${TEMP_FILE}" \
+'{
   metadata: {
-    session_id: (.session_id // "unknown"),
     date: $date,
+    timestamp: $timestamp,
+    session_id: (.session_id // "unknown"),
     trigger: $event,
-    project: env.PWD
+    project: env.PWD,
+    transcript_lines: $transcript_lines
   },
-  session: .
+  session: .,
+  transcript: $transcript[0]
 }' > "${HISTORY_FILE}"
 
-echo "History saved: ${HISTORY_FILE}" >&2
+echo "History saved: ${HISTORY_FILE} (transcript lines: ${CURRENT_TRANSCRIPT_LINES})" >&2
