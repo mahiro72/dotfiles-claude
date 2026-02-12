@@ -118,23 +118,6 @@
       "mcp__github__get_repo"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)",
-      "Read(./**/*.key)",
-      "Read(./**/*.pem)",
-      "Read(./**/*.p12)",
-      "Read(~/.aws/**)",
-      "Read(~/.ssh/**)",
-      "Read(~/.config/gcloud/**)",
-      "Read(./node_modules)",
-      "Read(./.git)",
-      "Read(./vendor)",
-      "Read(./build)",
-      "Read(./dist)",
-      "Read(./.next)",
-      "Read(./__pycache__)",
-
       "Bash(mv:*)",
       "Bash(cp:*)",
       "Bash(chmod:*)",

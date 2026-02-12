@@ -35,3 +35,8 @@ Web検索（WebSearch, WebFetch）やTaskツールで調査を行った場合、
 
 - ソースコードの調査依頼では、必ず参照箇所（ファイルパス・行番号）を提示する
 - 例: `src/utils/helper.ts:42-51`
+
+## Knowledge参照
+
+- プロジェクトに `.claude/knowledge/` ディレクトリが存在する場合、実装・調査の際には適宜 関連するナレッジを参照すること
+- 特に `project/conventions.md`（コーディング規約）と `project/architecture.md`（アーキテクチャ）は実装時に必ず確認する
