@@ -2,12 +2,12 @@
 #
 # Claude Code セッション履歴保存スクリプト
 #
-# PreCompact から呼び出され、セッションデータを
-# 各プロジェクトの .claude/logs/{date}_{session_id}.json に保存します
+# セッションデータを .claude/logs/{date}_{session_id}.json に保存
 # 会話履歴（transcript）も含め、重複保存はスキップ
 #
-# 使用方法: save-history.sh <event>
-#   event: PreCompact
+# 呼び出し元:
+#   - PreCompact フック（コンテキスト圧縮時）
+#   - Stop フック（会話終了時）
 #
 
 set -euo pipefail

@@ -1,4 +1,6 @@
 # Claude Code local files
 .claude/logs/
+.claude/knowledge/
+.claude/notes/
 .claude/CLAUDE.local.md
 .claude/settings.local.json
