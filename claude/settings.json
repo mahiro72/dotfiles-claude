@@ -22,7 +22,6 @@
     ]
   },
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "Read",
       "WebSearch",
@@ -49,7 +48,6 @@
       "WebFetch(domain:docs.aws.amazon.com)",
       "WebFetch(domain:cloud.google.com)",
       "WebFetch(domain:learn.microsoft.com)",
-
       "Bash(ls:*)",
       "Bash(rg:*)",
       "Bash(make:*)",
@@ -93,23 +91,17 @@
       "Bash(ping:*)",
       "Bash(lsof:*)",
       "Bash(tree:*)",
-
       "Bash(go test:*)",
       "Bash(go build:*)",
       "Bash(go fmt:*)",
       "Bash(gofmt:*)",
-      "Bash(python3:*)",
-      "Bash(node:*)",
-      "Bash(npx tsc:*)",
       "Bash(npm run lint)",
       "Bash(npm run test:*)",
-
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git branch:*)",
       "Bash(git show:*)",
-
       "mcp__github__get_issue",
       "mcp__github__search_issues",
       "mcp__github__get_pull_request",
@@ -125,7 +117,8 @@
       "mcp__github__list_tags",
       "mcp__github__search_code",
       "mcp__github__search_repositories",
-      "mcp__github__get_repo"
+      "mcp__github__get_repo",
+      "mcp__atlassian__search"
     ],
     "deny": [
       "Bash(mv:*)",
@@ -141,19 +134,16 @@
       "Bash(netstat:*)",
       "Bash(export:*)",
       "Bash(source:*)",
-
       "Bash(brew:*)",
       "Bash(npm:*)",
       "Bash(yarn:*)",
       "Bash(pip:*)",
       "Bash(poetry:*)",
-
       "Bash(docker:*)",
       "Bash(docker-compose:*)",
       "Bash(kubectl:*)",
       "Bash(helm:*)",
       "Bash(terraform:*)",
-
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
@@ -161,13 +151,12 @@
       "Bash(git reset:*)",
       "Bash(git cherry-pick:*)",
       "Bash(git remote set-url:*)",
-
       "Bash(gh issue create:*)",
       "Bash(gh issue edit:*)",
-
       "mcp__github__create_pull_request",
       "mcp__github__add_issue_comment",
       "mcp__github__get_issue_comments"
-    ]
+    ],
+    "defaultMode": "acceptEdits"
   }
 }
